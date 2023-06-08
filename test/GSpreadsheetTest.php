@@ -2,7 +2,7 @@
 
 namespace src\Test;
 
-use Bleazemedia\GDrive\GSpreadsheet;
+use Blazemedia\GDrive\GSpreadsheet;
 use PHPUnit\Framework\TestCase;
 
 

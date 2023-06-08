@@ -1,6 +1,6 @@
 <?php 
 
-namespace Bleazemedia\GDrive;
+namespace Blazemedia\GDrive;
 
 use Google;
 use Google\Service\Sheets;

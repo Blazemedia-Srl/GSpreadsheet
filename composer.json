@@ -1,5 +1,6 @@
 {
     "name": "blazemedia/gspreadsheet",
+    "type": "library",
     "autoload": {
         "psr-4": {
             "Blazemedia\\GDrive\\": "src/",

@@ -2,7 +2,7 @@
     "name": "blazemedia/gspreadsheet",
     "autoload": {
         "psr-4": {
-            "App\\": "src/",
+            "Blazemedia\\GSpreadsheet\\": "src/",
             "Test\\": "test/"
         }
     },

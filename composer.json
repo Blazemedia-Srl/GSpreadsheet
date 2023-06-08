@@ -1,5 +1,5 @@
 {
-    "name": "blazemedia/gdrive_connector",
+    "name": "blazemedia/gspreadsheet",
     "autoload": {
         "psr-4": {
             "App\\": "src/",

@@ -1,9 +1,8 @@
 <?php 
 
-namespace App;
+namespace Bleazemedia\GDrive;
 
 use Google;
-use Google\Service\AnalyticsReporting;
 use Google\Service\Sheets;
 
 class GSpreadsheet {

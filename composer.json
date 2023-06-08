@@ -2,7 +2,7 @@
     "name": "blazemedia/gspreadsheet",
     "autoload": {
         "psr-4": {
-            "Blazemedia\\GSpreadsheet\\": "src/",
+            "Blazemedia\\GDrive\\": "src/",
             "Test\\": "test/"
         }
     },

@@ -1,0 +1,22 @@
+{
+    "name": "blazemedia/gdrive_connector",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/",
+            "Test\\": "test/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andrea Marzilli",
+            "email": "a.marzilli@blazemedia.it"
+        }
+    ],
+    "require": {
+        "google/apiclient": "^2.9"
+        
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.2"
+    }
+}

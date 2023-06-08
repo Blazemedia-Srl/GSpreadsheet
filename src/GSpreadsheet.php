@@ -98,11 +98,11 @@ class GSpreadsheet {
                 }
             }
 
-            return (object) $row;
+            return $row;
 
         }, $values );
 
-        return array_filter( $rows, fn( $row ) => $this->isDateIntoRange( $row->$dateField, $startDate, $endDate ) );
+        return array_filter( $rows, fn( $row ) => $this->isDateIntoRange( $row[$dateField], $startDate, $endDate ) );
         
     }
     

@@ -1,0 +1,4 @@
+vendor/
+src/google_credentials/*
+!src/google_credentials/.gitkeep
+

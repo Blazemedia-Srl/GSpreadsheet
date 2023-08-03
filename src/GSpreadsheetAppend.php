@@ -45,7 +45,7 @@ class GSpreadsheetAppend {
         $rows = [$dataRow];
         $valueRange = new \Google_Service_Sheets_ValueRange();
         $valueRange->setValues($rows);
-        $options = ['valueInputOption' => 'USER_ENTERED']; // or RAW
+        $options = ['valueInputOption' => 'RAW']; // or USER_ENTERED
         $setdata = $this->service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
         
         return $setdata;

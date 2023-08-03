@@ -16,15 +16,25 @@ final class testGsAppendData extends TestCase
 
         $spreadsheet = new GSpreadsheetAppend(__DIR__.'/../../google_credentials/ga_fetcher_composed-slice-349709-ed3cff527c69.json');
 
-        $dataRow = [
-            'test_gclid',
-            'test_name',
-            'test_time',
-            'test_value'
+        $dataRows = [
+            [
+                'test_gclid',
+                'test_name' ,
+                'test_time' ,
+                'test_value'
+            ],
+            [
+                'test_gclid_2',
+                'test_name_2' ,
+                'test_time_2' ,
+                'test_value_2'
+            ]
         ];
 
-        $spreadsheet->insertData('1RpkHTGA9OdCDmp7v8syntwjYCJ0bfMlSUBuOOG1ZqHU', 'conversions', $dataRow);
-        
+        foreach($dataRows as $dataRow) {
+            $spreadsheet->insertData('1RpkHTGA9OdCDmp7v8syntwjYCJ0bfMlSUBuOOG1ZqHU', 'conversions', $dataRow);
+        }
+
         $this->assertTrue(true);
     }
 }

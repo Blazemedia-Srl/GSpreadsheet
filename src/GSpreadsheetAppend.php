@@ -40,7 +40,7 @@ class GSpreadsheetAppend {
     }
 
 
-    function insertData( $spreadsheetId, $range = 'Sheet1!A:E', $dataRow ) {
+    function insertData( string $spreadsheetId, string $range = 'Sheet1!A:E', array $dataRow = [] ) {
 
         $rows = [$dataRow];
         $valueRange = new \Google_Service_Sheets_ValueRange();

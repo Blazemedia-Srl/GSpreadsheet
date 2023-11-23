@@ -184,4 +184,26 @@ class GSpreadsheet {
 
         return $this->driveService->permissions->create($spreadsheetID, $newPermission);
     }
+
+    public function deleteByName($spreadsheetTitle):string {    
+        // Print the names and IDs for up to 10 files.
+        $optParams = array(
+            'pageSize' => 10,
+            'fields' => 'nextPageToken, files(id, name)'
+        );
+        $results = $this->driveService->files->listFiles($optParams)->files;
+    
+        // Check if the spreadsheet exists
+        foreach ($results as $file) {
+            if ($file->name == $spreadsheetTitle) {
+
+                // Spreadsheet exists, delete it
+                $this->driveService->files->delete($file->id);
+                return "Spreadsheet deleted successfully";
+            }
+        }
+    
+        // If the code reaches here, it means the spreadsheet does not exist.
+        return "Spreadsheet not found";
+    }
 }

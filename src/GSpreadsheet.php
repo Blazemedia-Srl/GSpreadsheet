@@ -10,7 +10,6 @@ class GSpreadsheet {
     private $sheetService;  
     private $driveService;  
     private $client;   
-    protected array $categories = [];
     
     /// Service account credentials in JSON format
     const KEY_FILE_LOCATION = __DIR__ . '/google_credentials/ga_fetcher_composed-slice-349709-ed3cff527c69.json';
@@ -27,15 +26,17 @@ class GSpreadsheet {
 
     }
 
+
     private function setupClient($credentials){
         $client = new Google\Client();
         $client->setAuthConfig( $credentials );
 
-        $this->client->addScope('https://www.googleapis.com/auth/spreadsheets');
-        $this->client->addScope('https://www.googleapis.com/auth/drive');
+        $client->addScope('https://www.googleapis.com/auth/spreadsheets');
+        $client->addScope('https://www.googleapis.com/auth/drive');
 
         return $client;
     }
+
 
     /**
      * Create and configure a new client object 
@@ -49,11 +50,13 @@ class GSpreadsheet {
         return $spreadsheet;
     }
 
+
     private function setupDriveService(){
         $service = new \Google_Service_Drive( $this->client );
 
         return $service;
     }
+
 
     function getReport( $spreadsheetId, $range = 'Sheet1!A:E' ) {
 
@@ -61,6 +64,7 @@ class GSpreadsheet {
         
         return $response->getValues();
     }
+
 
     function currencyToFloat( string $currency ) : float {
 
@@ -129,6 +133,7 @@ class GSpreadsheet {
         return strtotime( $date ) >= strtotime( $range->start ) && strtotime( $date ) <= strtotime( $range->end );
     }
 
+
     public function checkOrCreate($spreadsheetTitle){
         if(empty($spreadsheetTitle)){
             return false;
@@ -139,7 +144,10 @@ class GSpreadsheet {
         if(!$checkSpreadSheet){
             return $this->createSpreadSheet($spreadsheetTitle);
         }
+
+        return $checkSpreadSheet;
     }
+
 
     protected function checkExist($spreadsheetTitle):array|false{
         $optParams = [
@@ -147,17 +155,19 @@ class GSpreadsheet {
             'q' => "trashed=false"
         ];
         $results = $this->driveService->files->listFiles($optParams)->files;
-
+        
         // Check if the spreadsheet exists
         foreach ($results as $file) {
-            if ($file->name == $spreadsheetTitle) {
 
+
+            if ($file->name == $spreadsheetTitle) {
                 // Spreadsheet exists, return its ID and title
                 return ['id' => $file->id, 'title' => $file->name];
             }
         }
         return false;
     }
+
 
     protected function createSpreadSheet($spreadsheetTitle):array{
         $spreadsheet = new \Google_Service_Sheets_Spreadsheet([
@@ -170,10 +180,10 @@ class GSpreadsheet {
             'fields' => 'spreadsheetId'
         ]);
 
-        $this->setPermission('g.zerino@f2innovations.com','writer',$spreadsheet->spreadsheetId);
-
+        $this->setPermission('g.zerino@f2innovation.com','writer',$spreadsheet->spreadsheetId);
         return ['id' => $spreadsheet->spreadsheetId, 'title' => $spreadsheetTitle];
     }
+
 
     protected function setPermission($email,$role,$spreadsheetID){
 
@@ -181,9 +191,10 @@ class GSpreadsheet {
         $newPermission->setType('user');
         $newPermission->setRole($role);
         $newPermission->setEmailAddress($email);
-
+        
         return $this->driveService->permissions->create($spreadsheetID, $newPermission);
     }
+
 
     public function deleteByName($spreadsheetTitle):string {    
         // Print the names and IDs for up to 10 files.

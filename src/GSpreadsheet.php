@@ -7,7 +7,10 @@ use Google\Service\Sheets;
 
 class GSpreadsheet {
 
-    private $service;  
+    private $sheetService;  
+    private $driveService;  
+    private $client;   
+    protected array $categories = [];
     
     /// Service account credentials in JSON format
     const KEY_FILE_LOCATION = __DIR__ . '/google_credentials/ga_fetcher_composed-slice-349709-ed3cff527c69.json';
@@ -16,14 +19,23 @@ class GSpreadsheet {
 
         $credentials = $credentials_path != '' ? $credentials_path : GAReporting::KEY_FILE_LOCATION;
 
-        
+        $this->client = $this->setupClient($credentials);
 
-        $this->service = $this->init( $credentials );
+        $this->sheetService = $this->setupSheetService();
+
+        $this->driveService = $this->setupDriveService();
+
     }
 
+    private function setupClient($credentials){
+        $client = new Google\Client();
+        $client->setAuthConfig( $credentials );
 
-    
-  
+        $this->client->addScope('https://www.googleapis.com/auth/spreadsheets');
+        $this->client->addScope('https://www.googleapis.com/auth/drive');
+
+        return $client;
+    }
 
     /**
      * Create and configure a new client object 
@@ -31,18 +43,17 @@ class GSpreadsheet {
      * @param string $credentials
      * @return object
      */
-    private function init( $credentials ) {
-
-        $client = new Google\Client();
-        $client->setAuthConfig( $credentials );
-        $client->addScope( 'https://www.googleapis.com/auth/spreadsheets' );
-        
-        $spreadsheet = new Sheets( $client );
+    private function setupSheetService() {
+        $spreadsheet = new Sheets( $this->client );
 
         return $spreadsheet;
     }
 
+    private function setupDriveService(){
+        $service = new \Google_Service_Drive( $this->client );
 
+        return $service;
+    }
 
     function getReport( $spreadsheetId, $range = 'Sheet1!A:E' ) {
 
@@ -117,5 +128,60 @@ class GSpreadsheet {
 
         return strtotime( $date ) >= strtotime( $range->start ) && strtotime( $date ) <= strtotime( $range->end );
     }
-    
+
+    public function checkOrCreate($spreadsheetTitle){
+        if(empty($spreadsheetTitle)){
+            return false;
+        }
+        
+        $checkSpreadSheet = $this->checkExist($spreadsheetTitle);
+
+        if(!$checkSpreadSheet){
+            return $this->createSpreadSheet($spreadsheetTitle);
+        }
+    }
+
+    protected function checkExist($spreadsheetTitle):array|false{
+        $optParams = [
+            'fields' => 'files(id, name)',
+            'q' => "trashed=false"
+        ];
+        $results = $this->driveService->files->listFiles($optParams)->files;
+
+        // Check if the spreadsheet exists
+        foreach ($results as $file) {
+            if ($file->name == $spreadsheetTitle) {
+
+                // Spreadsheet exists, return its ID and title
+                return ['id' => $file->id, 'title' => $file->name];
+            }
+        }
+        return false;
+    }
+
+    protected function createSpreadSheet($spreadsheetTitle):array{
+        $spreadsheet = new \Google_Service_Sheets_Spreadsheet([
+            'properties' => [
+                'title' => $spreadsheetTitle
+            ]
+        ]);
+
+        $spreadsheet = $this->sheetService->spreadsheets->create($spreadsheet, [
+            'fields' => 'spreadsheetId'
+        ]);
+
+        $this->setPermission('g.zerino@f2innovations.com','writer',$spreadsheet->spreadsheetId);
+
+        return ['id' => $spreadsheet->spreadsheetId, 'title' => $spreadsheetTitle];
+    }
+
+    protected function setPermission($email,$role,$spreadsheetID){
+
+        $newPermission = new \Google_Service_Drive_Permission();
+        $newPermission->setType('user');
+        $newPermission->setRole($role);
+        $newPermission->setEmailAddress($email);
+
+        return $this->driveService->permissions->create($spreadsheetID, $newPermission);
+    }
 }

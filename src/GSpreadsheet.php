@@ -134,7 +134,7 @@ class GSpreadsheet {
     }
 
 
-    public function checkOrCreate($spreadsheetTitle){
+    public function checkOrCreate(string $spreadsheetTitle, array $dataHeader = []){
         if(empty($spreadsheetTitle)){
             return false;
         }
@@ -142,7 +142,7 @@ class GSpreadsheet {
         $checkSpreadSheet = $this->checkExist($spreadsheetTitle);
 
         if(!$checkSpreadSheet){
-            return $this->createSpreadSheet($spreadsheetTitle);
+            return $this->createSpreadSheet($spreadsheetTitle, $dataHeader);
         }
 
         return $checkSpreadSheet;
@@ -169,7 +169,7 @@ class GSpreadsheet {
     }
 
 
-    protected function createSpreadSheet($spreadsheetTitle):array{
+    protected function createSpreadSheet($spreadsheetTitle, array $dataHeader):array{
         $spreadsheet = new \Google_Service_Sheets_Spreadsheet([
             'properties' => [
                 'title' => $spreadsheetTitle
@@ -179,6 +179,11 @@ class GSpreadsheet {
         $spreadsheet = $this->sheetService->spreadsheets->create($spreadsheet, [
             'fields' => 'spreadsheetId'
         ]);
+
+        $valueRange = new \Google_Service_Sheets_ValueRange();
+        $valueRange->setValues([array_values($dataHeader)]);
+        $options = ['valueInputOption' => 'RAW']; // or USER_ENTERED
+        $this->sheetService->spreadsheets_values->append($spreadsheet->spreadsheetId, 'Sheet1', $valueRange, $options);
 
         $this->setPermission('g.zerino@f2innovation.com','writer',$spreadsheet->spreadsheetId);
         return ['id' => $spreadsheet->spreadsheetId, 'title' => $spreadsheetTitle];
